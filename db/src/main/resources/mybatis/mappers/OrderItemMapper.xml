@@ -1,0 +1,59 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "OrderItem">
+    <resultMap id="orderItemResult" type="OrderItem">
+        <result property="id" column="ID"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="orderId" column="ORDER_ID"/>
+        <result property="price" column="PRICE"/>
+    </resultMap>
+    <select id="getByOrderId" parameterType="int" resultMap="orderItemResult">
+        SELECT ID, SERVICE_TYPE_ID, DESCRIPTION, ORDER_ID, PRICE FROM `orderItem` WHERE ORDER_ID = #{id};
+    </select>
+    <insert id="insertMany">
+        INSERT INTO orderitem(SERVICE_TYPE_ID,DESCRIPTION,ORDER_ID,PRICE) VALUES
+        <foreach item="item" index="index" collection="array"
+                                                                                                  open="(" separator="," close=")">
+        ( #{item.serviceType.id}, #{item.description}, #{item.orderId}, #{order.price} )
+    </foreach>;
+    </insert>
+    <insert id="insert">
+        INSERT INTO orderitem(SERVICE_TYPE_ID,DESCRIPTION,ORDER_ID,PRICE) VALUES(#{serviceType.id},#{description},#{orderId},#{price});
+        <selectKey keyProperty = "id" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    <update id="update">
+        UPDATE `orderitem`
+        SET SERVICE_TYPE_ID=#{serviceType.id},
+            DESCRIPTION=#{description},
+            ORDER_ID=#{orderId},
+            PRICE=#{price}
+        WHERE ID=#{id};
+    </update>
+    <select id="getById" resultMap="orderItemResult">
+        SELECT ID, SERVICE_TYPE_ID, DESCRIPTION, ORDER_ID, PRICE
+        FROM orderitem
+        WHERE ID=#{id};
+    </select>
+    <select id="getByIds" resultMap="orderItemResult">
+        SELECT ID, SERVICE_TYPE_ID, DESCRIPTION, ORDER_ID, PRICE
+        FROM orderitem
+        WHERE ID IN
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ;
+    </select>
+    <delete id="deleteById">
+        DELETE FROM orderitem WHERE ID=#{id};
+    </delete>
+
+    <select id="getAll" resultMap="orderItemResult">
+        SELECT ID, SERVICE_TYPE_ID, DESCRIPTION, ORDER_ID, PRICE
+        FROM orderitem;
+    </select>
+
+</mapper>

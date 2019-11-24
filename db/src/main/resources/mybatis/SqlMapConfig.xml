@@ -1,0 +1,44 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeAliases>
+        <typeAlias alias="Client" type="com.gal.entities.GalClient"/>
+        <typeAlias alias="Order" type="com.gal.entities.Order"/>
+        <typeAlias alias="OrderItem" type="com.gal.entities.OrderItem"/>
+        <typeAlias alias="Tag" type="com.gal.entities.Tag"/>
+        <typeAlias alias="Payment" type="com.gal.entities.Payment"/>
+        <typeAlias alias="ServiceType" type="com.gal.entities.ServiceType"/>
+        <typeAlias alias="User" type="com.gal.entities.User"/>
+    </typeAliases>
+
+    <typeHandlers>
+            <typeHandler javaType="com.gal.entities.enums.OrderStatus" handler="com.gal.db.mybatis.handlers.OrderStatusTypeHandler"/>
+            <typeHandler javaType="com.gal.entities.enums.PaymentMethod" handler="com.gal.db.mybatis.handlers.PaymentMethodTypeHandler"/>
+            <typeHandler javaType="com.gal.entities.enums.UserStatus" handler="com.gal.db.mybatis.handlers.UserStatusTypeHandler"/>
+            <typeHandler javaType="com.gal.entities.enums.UserRole" handler="com.gal.db.mybatis.handlers.UserRoleTypeHandler"/>
+            <typeHandler javaType="com.gal.entities.enums.LocationType" handler="com.gal.db.mybatis.handlers.LocationTypeTypeHandler"/>
+    </typeHandlers>
+
+    <environments default = "development">
+        <environment id = "development">
+            <transactionManager type = "JDBC"/>
+            <dataSource type = "POOLED">
+                <property name = "driver" value = "com.mysql.jdbc.Driver"/>
+                <property name = "url" value = "jdbc:mysql://localhost:3306/galcore"/>
+                <property name = "username" value = "galcore"/>
+                <property name = "password" value = "824356"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper resource="mybatis/mappers/ClientMapper.xml"/>
+        <mapper resource="mybatis/mappers/OrderMapper.xml"/>
+        <mapper resource="mybatis/mappers/OrderItemMapper.xml"/>
+        <mapper resource="mybatis/mappers/PaymentMapper.xml"/>
+        <mapper resource="mybatis/mappers/ServiceTypeMapper.xml"/>
+        <mapper resource="mybatis/mappers/TagMapper.xml"/>
+        <mapper resource="mybatis/mappers/UserMapper.xml"/>
+    </mappers>
+</configuration>

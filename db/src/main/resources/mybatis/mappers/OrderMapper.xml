@@ -1,0 +1,91 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Order">
+    <resultMap id="orderResult" type="Order">
+        <result property="id" column="ID"/>
+        <result property="clientId" column="CLIENT_ID"/>
+        <result property="dateTime" column="DATETIME"/>
+        <result property="locationType" column="LOCATION_TYPE_ID"
+                typeHandler="com.gal.db.mybatis.handlers.LocationTypeTypeHandler"/>
+        <result property="city" column="CITY"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="status" column="ORDER_STATUS_ID"
+                typeHandler="com.gal.db.mybatis.handlers.OrderStatusTypeHandler"/>
+        <result property="orderGroupId" column="ORDER_GROUP_ID"
+                typeHandler="com.gal.db.mybatis.handlers.ZeroToNullTypeHandler"/>
+    </resultMap>
+    <insert id="insert" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `order`(CLIENT_ID,DATETIME,LOCATION,ORDER_STATUS_ID,ORDER_GROUP_ID) VALUES(#{clientId}, #{dateTime},
+        #{location}, #{status},#{orderGroupId, typeHandler=com.gal.db.mybatis.handlers.ZeroToNullTypeHandler});
+        <selectKey keyProperty = "id" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    <update id="update" parameterType="Order">
+        UPDATE `order` SET CLIENT_ID=#{clientId},
+        DATETIME=#{dateTime},
+        LOCATION_TYPE_ID=#{locationType},
+        CITY=#{city},
+        ADDRESS=#{address},
+        ORDER_GROUP_ID=#{orderGroupId, typeHandler=com.gal.db.mybatis.handlers.ZeroToNullTypeHandler})
+        WHERE ID = #{id};
+    </update>
+    <select id="getById" parameterType="int" resultMap="orderResult">
+        SELECT ID, CLIENT_ID, DATETIME, LOCATION_TYPE_ID, CITY, ADDRESS, ORDER_STATUS_ID, ORDER_GROUP_ID FROM `order` WHERE ID = #{id};
+    </select>
+    <select id="getByIds" resultMap="orderResult">
+        SELECT SELECT ID, CLIENT_ID, DATETIME, LOCATION_TYPE_ID, CITY, ADDRESS, ORDER_STATUS_ID, ORDER_GROUP_ID FROM `order` WHERE ID IN
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ;
+    </select>
+    <select id="getAll" resultMap="orderResult">
+        SELECT ID, CLIENT_ID, DATETIME, LOCATION_TYPE_ID, CITY, ADDRESS, ORDER_STATUS_ID, ORDER_GROUP_ID FROM `order`;
+    </select>
+
+    <delete id="deleteById" parameterType="int">
+        DELETE from `order` WHERE ID = #{id};
+    </delete>
+    <update id="cancel" parameterType="int">
+        UPDATE `order` SET ORDER_STATUS_ID=3
+        WHERE ID = #{id};
+    </update>
+    <update id="approve" parameterType="int">
+        UPDATE `order` SET ORDER_STATUS_ID=2
+        WHERE ID = #{id};
+    </update>
+    <select id="getByClientId" parameterType="int" resultMap="orderResult">
+        SELECT ID, CLIENT_ID, DATETIME, LOCATION_TYPE_ID, CITY, ADDRESS, ORDER_STATUS_ID, ORDER_GROUP_ID FROM `order` WHERE CLIENT_ID = #{id};
+    </select>
+    <select id="getByTagNames" resultMap="orderResult">
+        SELECT o.ID, o.CLIENT_ID, o.DATETIME, o.LOCATION_TYPE_ID, o.CITY, o.ADDRESS, o.ORDER_STATUS_ID, o.ORDER_GROUP_ID
+        FROM `tag` t
+        JOIN `ordertag` ot ON t.ID=ot.TAG_ID
+        JOIN `order` o ON ot.ORDER_ID=o.ID
+        WHERE t.NAME IN        <foreach item="item" index="index" collection="array"
+                                        open="(" separator="," close=")">
+        #{item}
+    </foreach>
+        GROUP BY o.ID;
+    </select>
+    <select id="getByTagIds" resultMap="orderResult">
+        SELECT o.ID, o.CLIENT_ID, o.DATETIME, o.LOCATION_TYPE_ID, o.CITY, o.ADDRESS, o.ORDER_STATUS_ID, o.ORDER_GROUP_ID
+        FROM `tag` t
+        JOIN `ordertag` ot ON t.ID=ot.TAG_ID
+        JOIN `order` o ON ot.ORDER_ID=o.ID
+        WHERE t.ID IN        <foreach item="item" index="index" collection="array"
+                                      open="(" separator="," close=")">
+        #{item}
+    </foreach>
+        GROUP BY o.ID;
+    </select>
+    <select id="getByPaymentId" resultMap="orderResult">
+        SELECT o.ID, o.CLIENT_ID, o.DATETIME, o.LOCATION_TYPE_ID, o.CITY, o.ADDRESS, o.ORDER_STATUS_ID, o.ORDER_GROUP_ID
+        FROM `payment` p
+        JOIN `order` o ON p.ORDER_ID=o.ID
+        WHERE p.ID=#{id};
+    </select>
+</mapper>

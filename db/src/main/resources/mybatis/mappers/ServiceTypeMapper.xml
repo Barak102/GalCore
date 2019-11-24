@@ -1,0 +1,43 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ServiceType">
+    <resultMap id="ServiceTypeResult" type="com.gal.entities.ServiceType">
+        <result property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="price" column="PRICE"/>
+    </resultMap>
+    <insert id="insert" parameterType="ServiceType">
+        INSERT INTO `servicetype` (NAME, DESCRIPTION, PRICE) VALUES(#{name}, #{description}, #{price});
+        <selectKey keyProperty = "id" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    <update id="update" parameterType="ServiceType">
+        UPDATE `serviceType`
+        SET NAME = #{name},
+            DESCRIPTION = #{description},
+            PRICE = #{price}
+        WHERE ID=#{id};
+    </update>
+    <select id="getByIds" resultMap="ServiceTypeResult">
+        SELECT ID, NAME, DESCRIPTION, PRICE FROM `serviceType` WHERE ID IN
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ;
+    </select>
+    <select id="getAll" resultMap="ServiceTypeResult">
+        SELECT ID, NAME, DESCRIPTION, PRICE FROM `serviceType`;
+    </select>
+    <select id="getById" parameterType="int" resultMap="ServiceTypeResult">
+        SELECT ID, NAME, DESCRIPTION, PRICE FROM `serviceType` WHERE ID = #{id};
+    </select>
+    <delete id="deleteById" parameterType="int">
+        DELETE
+        FROM `serviceType`
+        WHERE ID=#{id}
+    </delete>
+</mapper>

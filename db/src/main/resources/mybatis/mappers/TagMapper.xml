@@ -1,0 +1,106 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "Tag">
+    <resultMap id="tagResult" type="com.gal.entities.Tag">
+        <result property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+    </resultMap>
+
+    <select id="getByOrderId" resultMap="tagResult" parameterType="int">
+        SELECT t.ID,t.NAME
+        FROM `tag` t
+        JOIN `orderTag` ot ON t.ID=ot.TAG_ID
+        WHERE ot.ORDER_ID=#{id};
+    </select>
+
+    <select id="getByNames" resultMap="tagResult">
+        SELECT ID,NAME FROM tag
+        WHERE NAME IN
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>;
+    </select>
+
+    <insert id="insertTagNames">
+        INSERT INTO `tag` (NAME) VALUES <foreach item="item" index="index" collection="list"
+                                                         open="" separator="," close="">
+        ( #{item} )
+    </foreach>;
+    </insert>
+
+    <insert id="insertTagsToOrder" parameterType="Tag">
+        INSERT INTO `ordertag` (ORDER_ID,TAG_ID) VALUES         <foreach item="item" index="index" collection="list"
+                                                         open="" separator="," close="">
+        ( #{item.orderId}, #{item.id} )
+    </foreach>;
+    </insert>
+    <delete id="deleteTagsFromOrder">
+        DELETE
+        FROM `orderTag`
+        WHERE TAG_ID IN <foreach item="item" index="index" collection="list"
+                          open="(" separator="," close=")">
+        #{item.id}
+    </foreach>
+        ;
+    </delete>
+    <insert id="insert" parameterType="Tag">
+        INSERT INTO `tag`(NAME) VALUES(#{name});
+    </insert>
+    <update id="update" parameterType="Tag">
+        UPDATE `tag`
+        SET ID=#{id},
+            NAME=#{name}
+        WHERE ID=#{id};
+    </update>
+    <select id="getById" parameterType="int" resultMap="tagResult">
+        SELECT ID, NAME FROM `tag` WHERE ID=#{id};
+    </select>
+<select id="getByIds" resultMap="tagResult">
+    SELECT ID, NAME FROM `tag` WHERE ID IN
+    <foreach item="item" index="index" collection="array"
+             open="(" separator="," close=")">
+        #{item}
+    </foreach>
+    ;
+</select>
+<delete id="deleteById" parameterType="int">
+    DELETE
+    FROM `tag`
+    WHERE ID=#{id};
+</delete>
+    <select id="getAll" resultMap="tagResult">
+        SELECT ID, NAME
+        FROM `tag`;
+    </select>
+
+
+  <!--  <insert id = "insert" parameterType = "Tag">
+        INSERT INTO client (FIRSTNAME,LASTNAME,EMAIL,PHONE,ADDRESS,CITY) VALUES(#{firstName}, #{lastName}, #{email}, #{phone}, #{address}, #{city});
+        <selectKey keyProperty = "id" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    <delete id="deleteById" parameterType="int">
+        DELETE from client WHERE ID = #{id};
+    </delete>
+    <update id = "update" parameterType = "Client">
+        UPDATE client SET FIRSTNAME = #{firstName}, LASTNAME = #{lastName}, CITY = #{city}, ADDRESS = #{address}, EMAIL = #{email}, PHONE = #{phone} WHERE ID = #{id};
+    </update>
+
+    <select id="getById" parameterType = "int" resultMap = "clientResult">
+        SELECT ID, FIRSTNAME, LASTNAME, CITY, ADDRESS, PHONE, EMAIL FROM client WHERE ID = #{id};
+    </select>
+    <select id="getByIds" resultMap="clientResult">
+        SELECT ID, FIRSTNAME, LASTNAME, CITY, ADDRESS, PHONE, EMAIL FROM client WHERE ID IN
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ;
+    </select>
+    <select id="getAll" resultMap="clientResult">
+        SELECT ID, FIRSTNAME, LASTNAME, CITY, ADDRESS, PHONE, EMAIL FROM client;
+    </select>-->
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Payment">
+    <resultMap id="paymentResult" type="Payment">
+        <result property="id" column="id"/>
+        <result property="paymentMethod" column="PAYMENT_METHOD_ID"/>
+        <result property="orderId" column="ORDER_ID"/>
+        <result property="amount" column="AMOUNT"/>
+    </resultMap>
+    <insert id="insert" parameterType="Payment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `payment`(ORDER_ID, PAYMENT_METHOD_ID, AMOUNT) VALUES(#{orderId}, #{paymentMethod},
+        #{amount});
+        <selectKey keyProperty = "id" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    <update id="update" parameterType="Payment">
+        UPDATE `payment`
+        SET ORDER_ID=#{orderId},
+            PAYMENT_METHOD_ID=#{paymentMethod},
+            AMOUNT=#{amount}
+        WHERE ID = #{id};
+    </update>
+    <select id="getById" parameterType="int" resultMap="paymentResult">
+        SELECT ID, ORDER_ID, PAYMENT_METHOD_ID, AMOUNT FROM `payment` WHERE ID = #{id};
+    </select>
+    <select id="getByIds" resultMap="paymentResult">
+        SELECT ID, ORDER_ID, PAYMENT_METHOD_ID, AMOUNT FROM `payment` WHERE ID IN
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ;
+    </select>
+    <select id="getByOrderId" resultMap="paymentResult">
+        SELECT ID, ORDER_ID, PAYMENT_METHOD_ID, AMOUNT FROM `payment` WHERE ORDER_ID=#{id};
+    </select>
+    <select id="getAll" resultMap="paymentResult">
+        SELECT ID, ORDER_ID, PAYMENT_METHOD_ID, AMOUNT FROM `payment`;
+    </select>
+
+    <delete id="deleteById" parameterType="int">
+        DELETE from `payment` WHERE ID = #{id};
+    </delete>
+</mapper>

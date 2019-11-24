@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "Client">
+    <resultMap id="clientResult" type="Client">
+        <result property="id" column="ID"/>
+        <result property="firstName" column="FIRSTNAME"/>
+        <result property="lastName" column="LASTNAME"/>
+        <result property="city" column="CITY"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="phone" column="PHONE"/>
+        <result property="email" column="EMAIL"/>
+    </resultMap>
+    <insert id = "insert" parameterType = "Client">
+        INSERT INTO client (FIRSTNAME,LASTNAME,EMAIL,PHONE,ADDRESS,CITY) VALUES(#{firstName}, #{lastName}, #{email}, #{phone}, #{address}, #{city});
+        <selectKey keyProperty = "id" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    <delete id="deleteById" parameterType="int">
+        DELETE from client WHERE ID = #{id};
+    </delete>
+    <update id = "update" parameterType = "Client">
+        UPDATE client SET FIRSTNAME = #{firstName}, LASTNAME = #{lastName}, CITY = #{city}, ADDRESS = #{address}, EMAIL = #{email}, PHONE = #{phone} WHERE ID = #{id};
+    </update>
+
+    <select id="getById" parameterType = "int" resultMap = "clientResult">
+        SELECT ID, FIRSTNAME, LASTNAME, CITY, ADDRESS, PHONE, EMAIL FROM client WHERE ID = #{id};
+    </select>
+    <select id="getByIds" resultMap="clientResult">
+        SELECT ID, FIRSTNAME, LASTNAME, CITY, ADDRESS, PHONE, EMAIL FROM client WHERE ID IN
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ;
+    </select>
+    <select id="getAll" resultMap="clientResult">
+        SELECT ID, FIRSTNAME, LASTNAME, CITY, ADDRESS, PHONE, EMAIL FROM client;
+    </select>
+</mapper>
